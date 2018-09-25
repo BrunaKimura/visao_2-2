@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-class codeword:
+class Codeword:
 
     def __init__(self, xt, aux):
         self.v = xt
@@ -15,7 +15,12 @@ L=0
 e1 = 10
 
 t = img.shape[0]*img.shape[1]
-C = [[]for i in range(t)]
+
+C =[]
+for row in range(img.shape[0]):
+    C.append([])
+    for col in range (img.shape[1]):
+        C[row].append([])
 
 # funções
 def colordist(xt, vi):
@@ -23,7 +28,7 @@ def colordist(xt, vi):
     p = ((vi[0]*xt[0]) + (vi[1]*xt[1]) + (vi[2]*xt[2]))
     return (norma_xt)-(p)
 
-def brightness(xt, (Imin, Imax)):
+def brightness(xt, Imin, Imax):
     if Imin <= xt and xt<= Imax:
         return True
     else:
@@ -55,7 +60,13 @@ for t in (1, N+1):
                     break 
 
             if match == False:
-                C[row][col] = codeword(xt, (I,I,1,t-1,t,t))
+                C[row][col].append(Codeword(xt, [I,I,1,t-1,t,t]))
+
+for row in C:
+    for col in row:
+        for codeword in col:
+            new_lamb = max(codeword[3], (N-codeword[5]+codeword[4]-1))
+            codeword[3] = new_lamb
 
 
 
