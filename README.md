@@ -1,3 +1,4 @@
-# visao_2-2
+# Visao 2-2
 
-Segundo projeto do segundo módulo de visão computacional
+Segundo projeto do segundo módulo de visão computacional.
+
