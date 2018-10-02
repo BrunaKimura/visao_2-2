@@ -16,7 +16,7 @@ def colordist(xt, vi):
     norma_vi = (vi[0]**2+vi[1]**2+vi[2]**2)
     xv = (float(vi[0])*float(xt[0]) + float(vi[1])*float(xt[1]) + float(vi[2])*float(xt[2]))
 
-    if norma_vi < 0:
+    if norma_vi <= 0:
         p = 0
     else:
         p = xv/norma_vi
@@ -36,13 +36,14 @@ def brightness(xt, Imin, Imax):
 
 L=0
 e1 = 12
-N = 1
+N = 30
 
 
 for m in range(1, N+1):
-    n = 70 + m
+    n = 20 + m
     nome = '000000'+str(n)
     img = cv.imread(nome +'.jpg')
+    print("primeira imagem")
 
 
     C =[]
@@ -84,5 +85,4 @@ for m in range(1, N+1):
                 new_lamb = max(codeword.aux[3], (N-codeword.aux[5]+codeword.aux[4]-1))
                 codeword.aux[3] = new_lamb
 
-print(C)
 pickle.dump(C, open( "treino.p", "wb" ) )
