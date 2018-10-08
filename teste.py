@@ -1,5 +1,5 @@
 import pickle
-import Codebook
+import cv2 as cv
 
 C = pickle.load( open( "treino.p", "rb" ) )
 e2 = 8

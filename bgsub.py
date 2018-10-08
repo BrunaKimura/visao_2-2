@@ -3,12 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pickle
+import Codeword 
 
-C = pickle.load(open("treino.p", "rb" ))
+entrada = open("treino.p", "rb" )
+C = pickle.load(entrada)
 e2 = 1000
 
 img = cv.imread('00000001.jpg')
-
 
 img_preta = np.zeros([img.shape[0],img.shape[1],3])
 
@@ -72,3 +73,4 @@ for row in range (img.shape[0]):
 
 plt.imshow(np.uint32(img_preta))
 plt.show()
+entrada.close()

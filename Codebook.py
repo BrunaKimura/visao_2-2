@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pickle
+from tqdm import tqdm
 
 class Codeword:
 
@@ -36,53 +37,54 @@ def brightness(xt, Imin, Imax):
 
 L=0
 e1 = 12
-N = 30
+N = 3
 
+img = cv.imread('00000050.jpg')
 
-for m in range(1, N+1):
-    n = 20 + m
+C =[]
+for row in range(img.shape[0]):
+    C.append([])
+    for col in range (img.shape[1]):
+        C[row].append([])
+
+# Algoritmo do Codebook
+for t in tqdm(range(1, N+1)):
+    n = 20 + t
     nome = '000000'+str(n)
     img = cv.imread(nome +'.jpg')
-    print("primeira imagem")
 
+    for row in range (img.shape[0]):
+        for col in range(img.shape[1]):
+            xt = img[row, col, :]
+            R = xt[0]
+            G = xt[1]
+            B = xt[2]
+            I =(R**2 + G**2 + B**2)**(1/2) 
 
-    C =[]
-    for row in range(img.shape[0]):
-        C.append([])
-        for col in range (img.shape[1]):
-            C[row].append([])
+            match = False
 
-    # Algoritmo do Codebook
-    for t in range(1, N+1):
-        for row in range (img.shape[0]):
-            for col in range(img.shape[1]):
-                xt = img[row, col, :]
-                R = xt[0]
-                G = xt[1]
-                B = xt[2]
-                I =(R**2 + G**2 + B**2)**(1/2) 
+            for cw in C[row][col]:
+                if (colordist(xt, cw.v) <= e1) and (brightness(xt, cw.aux[0], cw.aux[1])):
+                    cw.v[0] = (cw.aux[2]*cw.v[0]+xt[0])/(cw.aux[2]+1)
+                    cw.v[1] = (cw.aux[2]*cw.v[1]+xt[1])/(cw.aux[2]+1)
+                    cw.v[2] = (cw.aux[2]*cw.v[2]+xt[2])/(cw.aux[2]+1)
+                    Imin = min(I, cw.aux[0])
+                    Imax = max(I, cw.aux[1])
+                    cw.aux = [Imin, Imax, cw.aux[2]+1, max(cw.aux[3],t-cw.aux[5]), cw.aux[4], t]
 
-                match = False
+                    match = True
+                    break 
 
-                for cw in C[row][col]:
-                    if (colordist(xt, cw.v) <= e1) and (brightness(xt, cw.aux[0], cw.aux[1])):
-                        cw.v[0] = (cw.aux[2]*cw.v[0]+xt[0])/(cw.aux[2]+1)
-                        cw.v[1] = (cw.aux[2]*cw.v[1]+xt[1])/(cw.aux[2]+1)
-                        cw.v[2] = (cw.aux[2]*cw.v[2]+xt[2])/(cw.aux[2]+1)
-                        Imin = min(I, cw.aux[0])
-                        Imax = max(I, cw.aux[1])
-                        cw.aux = (Imin, Imax, cw.aux[2]+1, max(cw.aux[3],t-cw.aux[5]), cw.aux[4], t)
+            if match == False:
+                lista_aux = [I,I,1,t-1,t,t]
+                C[row][col].append(Codeword(xt, lista_aux))
 
-                        match = True
-                        break 
+for row in range(img.shape[0]):
+    for col in range(img.shape[1]):
+        for codeword in C[row][col]:
+            new_lamb = max(codeword.aux[3], (N-codeword.aux[5]+codeword.aux[4]-1))
+            codeword.aux[3] = new_lamb
 
-                if match == False:
-                    C[row][col].append(Codeword(xt, [I,I,1,t-1,t,t]))
-
-    for row in C:
-        for col in row:
-            for codeword in col:
-                new_lamb = max(codeword.aux[3], (N-codeword.aux[5]+codeword.aux[4]-1))
-                codeword.aux[3] = new_lamb
-
-pickle.dump(C, open( "treino.p", "wb" ) )
+saida = open("treino.p", "wb" )
+pickle.dump(C,  saida)
+saida.close()
